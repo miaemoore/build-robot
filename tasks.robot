@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation       This program automatically places robot orders on the website from the order csv files.
 
-Library             RPA.Browser.Selenium
+Library             RPA.Browser.Selenium    auto_close=${False}
 Library             RPA.PDF
 Library             RPA.Excel.Files
 Library             RPA.HTTP
@@ -15,7 +15,6 @@ This program automatically places robot orders on the website from the order csv
     Open order webpage
     Get orders
     Log    Done.
-    [Teardown]    Close browser and zip folder
 
 
 *** Keywords ***
