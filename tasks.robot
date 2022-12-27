@@ -8,6 +8,8 @@ Library             RPA.HTTP
 Library             RPA.Tables
 Library             RPA.FileSystem
 Library             RPA.Archive
+Library             RPA.Dialogs
+Library             RPA.Robocorp.Vault
 
 
 *** Tasks ***
@@ -19,7 +21,8 @@ This program automatically places robot orders on the website from the order csv
 
 *** Keywords ***
 Open order webpage
-    Open Available Browser    https://robotsparebinindustries.com/#/robot-order
+    ${website}=    Get Secret    website
+    Open Available Browser    ${website}[address]
 
 Get orders
     Download    https://robotsparebinindustries.com/orders.csv    orders.csv    overwrite=true
@@ -28,10 +31,10 @@ Get orders
         Close popup
         Fill out form    ${order}
         Preview robot
-        Place order
-        Check for error    ${order}
+        Place order    ${order}
         Order another robot
     END
+    [Teardown]    Close browser and zip folder
 
 Close popup
     Click Button When Visible    css:.btn.btn-dark
@@ -44,17 +47,19 @@ Fill out form
     Input Text    address    ${order}[Address]
 
 Preview robot
-    Click Button    id:preview
+    Wait And Click Button    id:preview
     Wait Until Element Is Visible    id:robot-preview-image
 
 Place order
-    Click Button    id:order
+    [Arguments]    ${order}
+    Wait and Click Button    id:order
+    Check for error    ${order}
 
 Check for error
     [Arguments]    ${order}
     ${errorcheck}=    Is Element Visible    id:order-completion
     IF    ${errorcheck} == ${False}
-        Place order
+        Place order    ${order}
     ELSE
         Create receipt pdf    ${order}
     END
@@ -74,8 +79,8 @@ Create receipt pdf
     Remove File    ${OUTPUT_DIR}${/}robot${order}[Order number].png
 
 Order another robot
-    Click Button    id:order-another
+    Wait And Click Button    id:order-another
 
 Close browser and zip folder
     Close Browser
-    Archive Folder With Zip    ${OUTPUT_DIR}${/}Receipts    Receipts.zip
+    Archive Folder With Zip    ${OUTPUT_DIR}${/}Receipts    ${OUTPUT_DIR}${/}Receipts.zip
