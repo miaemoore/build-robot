@@ -14,19 +14,27 @@ Library             RPA.Robocorp.Vault
 
 *** Tasks ***
 This program automatically places robot orders on the website from the order csv files.
-    Open order webpage
-    Get orders
+    Get csv file
     Log    Done.
 
 
 *** Keywords ***
+Get csv file
+    Add heading    Order File
+    Add text    Please provide csv order file link:
+    Add text input    csv    placeholder=https://robotsparebinindustries.com/orders.csv
+    ${input}=    Run dialog
+    Get orders    ${input.csv}
+
 Open order webpage
     ${website}=    Get Secret    website
     Open Available Browser    ${website}[address]
 
 Get orders
-    Download    https://robotsparebinindustries.com/orders.csv    orders.csv    overwrite=true
+    [Arguments]    ${input.csv}
+    Download    ${input.csv}    orders.csv    overwrite=true
     ${orders}=    Read table from CSV    orders.csv
+    Open order webpage
     FOR    ${order}    IN    @{orders}
         Close popup
         Fill out form    ${order}
