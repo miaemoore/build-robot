@@ -92,3 +92,4 @@ Order another robot
 Close browser and zip folder
     Close Browser
     Archive Folder With Zip    ${OUTPUT_DIR}${/}Receipts    ${OUTPUT_DIR}${/}Receipts.zip
+    Empty Directory    ${OUTPUT_DIR}${/}Receipts
